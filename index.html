@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHAPA MODZ — Магазин модов Free Fire</title>
+  <style>
+    :root {
+      --bg: #090705;
+      --card: #130f0b;
+      --card-2: #19140f;
+      --border: #2a2118;
+      --text: #f7f4ef;
+      --muted: #a69c90;
+      --accent: #ff7a00;
+      --accent-2: #ff9900;
+      --green: #22c55e;
+      --blue: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1b1107 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 88px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 12px 14px;
+      background: rgba(12, 9, 6, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.6px;
+      color: var(--accent);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .langs {
+      display: flex;
+      gap: 4px;
+      background: var(--card);
+      padding: 3px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .lang-btn.active {
+      background: var(--accent);
+      color: #111;
+    }
+
+    .login-btn {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 20px 14px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 122, 0, 0.12);
+      border: 1px solid rgba(255, 122, 0, 0.35);
+      color: #ffb066;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .badge-green {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #4ade80;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .dot-green {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 10px 0 18px;
+    }
+
+    .hero-title {
+      font-size: 40px;
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: 1px;
+      background: linear-gradient(180deg, #ffb347 0%, #ff6a00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 380px;
+      margin: 0 auto 20px;
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .pill {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: #e7e1d8;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 15px 18px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(255, 122, 0, 0.28);
+      margin-bottom: 12px;
+      display: block;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-telegram {
+      width: 100%;
+      background: var(--card-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 18px;
+      display: block;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .ticker {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ticker strong {
+      color: var(--text);
+    }
+
+    .ticker span.prod {
+      color: #ff9d42;
+      font-weight: 700;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .section-sub {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .status-counters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .counter-pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .counter-muted {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .monitor-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .monitor-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .monitor-item:last-child {
+      border-bottom: none;
+    }
+
+    .monitor-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mod-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 13px;
+      flex-shrink: 0;
+      color: #fff;
+    }
+
+    .icon-phantom {
+      background: linear-gradient(135deg, #991b1b, #450a0a);
+    }
+
+    .icon-drip {
+      background: linear-gradient(135deg, #5b21b6, #2e1065);
+    }
+
+    .mod-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .mod-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .online-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34, 197, 94, 0.14);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #4ade80;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 11px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .filter-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: #111;
+      border-color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .product-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .thumb-phantom {
+      height: 124px;
+      background: linear-gradient(135deg, #2b090c 0%, #7f1d1d 55%, #180608 100%);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .thumb-drip {
+      height: 124px;
+      background: linear-gradient(135deg, #1d1042 0%, #4c1d95 55%, #110924 100%);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tag {
+      align-self: flex-start;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    .thumb-name {
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.15;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    .thumb-sub {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.85);
+      margin-top: 3px;
+    }
+
+    .card-body {
+      padding: 12px;
+    }
+
+    .prod-title {
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .status-line {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .online {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .price-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .price {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .buy-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #111;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .info-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 13px;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      background: rgba(12, 9, 6, 0.96);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 8px 4px 10px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      color: var(--accent);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 40;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 400px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .modal h3 {
+      font-size: 17px;
+      margin-bottom: 6px;
+    }
+
+    .modal p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-close {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-go {
+      flex: 1;
+      background: var(--accent);
+      border: none;
+      color: #111;
+      border-radius: 10px;
+      padding: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" onclick="openPage('home')">SHAPA MODZ</div>
+    <div class="langs">
+      <button class="lang-btn active" onclick="setLang(this, 'RU')">RU</button>
+      <button class="lang-btn" onclick="setLang(this, 'KZ')">KZ</button>
+      <button class="lang-btn" onclick="setLang(this, 'EN')">EN</button>
+    </div>
+    <button class="login-btn" onclick="openPage('cabinet')">Войти</button>
+  </header>
+
+  <main class="container">
+    <!-- ГЛАВНАЯ -->
+    <section id="page-home" class="page active">
+      <div class="hero">
+        <div class="badge"><span class="dot"></span> МАГАЗИН МОДОВ FREE FIRE</div>
+        <h1 class="hero-title">SHAPA<br>MODZ</h1>
+        <p class="hero-sub">
+          Приватные моды для Free Fire. Оплатил — и ключ уже у тебя: в Telegram и на сайте.
+        </p>
+        <div class="pills">
+          <div class="pill">2000+ клиентов</div>
+          <div class="pill">Поддержка 24/7</div>
+          <div class="pill">Гарантия замены</div>
+        </div>
+        <button class="btn-primary" onclick="openPage('shop')">Открыть магазин</button>
+        <a class="btn-telegram" href="https://t.me/tatuka11" target="_blank" rel="noopener noreferrer">
+          Telegram (@tatuka11)
+        </a>
+      </div>
+
+      <div class="ticker">
+        <span>🔥</span>
+        <div>
+          <strong>@shapa_client</strong> купил <span class="prod">Phantom (Android+ios)</span> • только что
+        </div>
+      </div>
+    </section>
+
+    <!-- МАГАЗИН -->
+    <section id="page-shop" class="page">
+      <h2 class="section-title">Каталог софта</h2>
+      <p class="section-sub">Доступные моды для Free Fire с быстрой выдачей ключа.</p>
+      <input
+        id="searchInput"
+        class="search-input"
+        type="text"
+        placeholder="Поиск товаров..."
+        oninput="filterProducts()"
+      />
+      <div class="filters">
+        <button class="filter-btn active" onclick="setFilter('all', this)">Все ✓</button>
+        <button class="filter-btn" onclick="setFilter('android', this)">Android</button>
+        <button class="filter-btn" onclick="setFilter('ios', this)">iOS</button>
+      </div>
+
+      <div class="grid" id="productGrid">
+        <article class="product-card" data-name="phantom android ios" data-platform="android ios">
+          <div class="thumb-phantom">
+            <span class="tag">• BEST HACK</span>
+            <div>
+              <div class="thumb-name">PHANTOM MODE</div>
+              <div class="thumb-sub">VPN PANEL • ANDROID + iOS</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="prod-title">Phantom (Android+ios)</div>
+            <div class="status-line"><span class="online">• ONLINE</span> • Andr+iOS</div>
+            <div class="price-label">ОТ</div>
+            <div class="price">200 ₸</div>
+            <button class="buy-btn" onclick="openBuyModal('Phantom (Android+ios)', '200 ₸')">Купить</button>
+          </div>
+        </article>
+
+        <article class="product-card" data-name="drip wire android ios" data-platform="android ios">
+          <div class="thumb-drip">
+            <span class="tag">• 4.4</span>
+            <div>
+              <div class="thumb-name">DRIP WIRE</div>
+              <div class="thumb-sub">Aimbot • ESP • Speed</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="prod-title">Drip Wire (android+ IOS)</div>
+            <div class="status-line"><span class="online">• ONLINE</span> • Andr+iOS</div>
+            <div class="price-label">ОТ</div>
+            <div class="price">250 ₸</div>
+            <button class="buy-btn" onclick="openBuyModal('Drip Wire (android+ IOS)', '250 ₸')">Купить</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- СТАТУС МОДОВ -->
+    <section id="page-status" class="page">
+      <div class="badge-green"><span class="dot-green"></span> МОНИТОРИНГ</div>
+      <h2 class="section-title">Статус модов</h2>
+      <p class="section-sub">Актуальное состояние всех модов в реальном времени.</p>
+
+      <div class="status-counters">
+        <span class="counter-pill">2 ONLINE</span>
+        <span class="counter-muted">0 UPDATING</span>
+        <span class="counter-muted">0 OFFLINE</span>
+      </div>
+
+      <div class="monitor-card">
+        <div class="monitor-item">
+          <div class="monitor-left">
+            <div class="mod-icon icon-phantom">PH</div>
+            <div>
+              <div class="mod-name">Phantom (Android+ios)</div>
+              <div class="mod-meta">Android + iOS • VPN Panel</div>
+            </div>
+          </div>
+          <span class="online-badge"><span class="dot-green"></span> ONLINE</span>
+        </div>
+
+        <div class="monitor-item">
+          <div class="monitor-left">
+            <div class="mod-icon icon-drip">DW</div>
+            <div>
+              <div class="mod-name">Drip Wire (android+ IOS)</div>
+              <div class="mod-meta">Android + iOS • Aimbot / ESP</div>
+            </div>
+          </div>
+          <span class="online-badge"><span class="dot-green"></span> ONLINE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- СВЯЗЬ С АДМИНОМ -->
+    <section id="page-support" class="page">
+      <h2 class="section-title">Связь с админом</h2>
+      <p class="section-sub">По вопросам покупки, выдачи ключа и поддержки обращайтесь в Telegram.</p>
+      <div class="info-box">
+        <a class="btn-primary" href="https://t.me/tatuka11" target="_blank" rel="noopener noreferrer" style="margin-bottom: 0;">
+          Написать @tatuka11 в Telegram
+        </a>
+      </div>
+    </section>
+
+    <!-- КАБИНЕТ -->
+    <section id="page-cabinet" class="page">
+      <h2 class="section-title">Кабинет</h2>
+      <p class="section-sub">Информация о магазине и заказах.</p>
+      <div class="info-box">
+        <div class="info-row">
+          <span>Магазин</span>
+          <strong>SHAPA MODZ</strong>
+        </div>
+        <div class="info-row">
+          <span>Контакты</span>
+          <a href="https://t.me/tatuka11" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">@tatuka11</a>
+        </div>
+        <div class="info-row">
+          <span>Статус покупок</span>
+          <span style="color: var(--muted);">Через Telegram</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-page="home" onclick="openPage('home')">
+      <span>Главная</span>
+    </button>
+    <button class="nav-btn" data-page="shop" onclick="openPage('shop')">
+      <span>Магазин</span>
+    </button>
+    <button class="nav-btn" data-page="status" onclick="openPage('status')">
+      <span>Статус модов</span>
+    </button>
+    <button class="nav-btn" data-page="support" onclick="openPage('support')">
+      <span>Связь с админом</span>
+    </button>
+    <button class="nav-btn" data-page="cabinet" onclick="openPage('cabinet')">
+      <span>Кабинет</span>
+    </button>
+  </nav>
+
+  <div class="modal-backdrop" id="buyModal">
+    <div class="modal">
+      <h3 id="modalTitle">Оформление заказа</h3>
+      <p id="modalDesc">Для получения ключа и оплаты перейдите в Telegram @tatuka11.</p>
+      <div class="modal-actions">
+        <button class="btn-close" onclick="closeBuyModal()">Закрыть</button>
+        <a class="btn-go" href="https://t.me/tatuka11" target="_blank" rel="noopener noreferrer">В Telegram</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentFilter = 'all';
+
+    function openPage(pageId) {
+      document.querySelectorAll('.page').forEach((p) => p.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.page === pageId);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setLang(el, lang) {
+      document.querySelectorAll('.lang-btn').forEach((b) => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function setFilter(filter, el) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
+      el.classList.add('active');
+      filterProducts();
+    }
+
+    function filterProducts() {
+      const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      document.querySelectorAll('.product-card').forEach((card) => {
+        const name = card.dataset.name || '';
+        const platform = card.dataset.platform || '';
+        const matchPlatform = currentFilter === 'all' || platform.includes(currentFilter);
+        const matchQuery = !q || name.includes(q);
+        card.style.display = matchPlatform && matchQuery ? 'flex' : 'none';
+      });
+    }
+
+    function openBuyModal(title, price) {
+      document.getElementById('modalTitle').textContent = title + ' — от ' + price;
+      document.getElementById('modalDesc').textContent =
+        'Выберите тариф и напишите @tatuka11 в Telegram для мгновенной выдачи ключа.';
+      document.getElementById('buyModal').classList.add('open');
+    }
+
+    function closeBuyModal() {
+      document.getElementById('buyModal').classList.remove('open');
+    }
+  </script>
+</body>
+</html>
