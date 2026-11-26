@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHAPA MODZ — Магазин модов Free Fire</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #0b0908; color: #fff; padding-bottom: 85px; }
+
+    /* Жоғарғы іздеу және панель */
+    .search-wrap { padding: 12px 16px 6px; background: #0b0908; }
+    .search-box {
+      width: 100%; background: #151210; border: 1px solid #26201c;
+      border-radius: 12px; padding: 11px 14px; color: #fff; font-size: 13px;
+      outline: none;
+    }
+    .search-box::placeholder { color: #7d756d; }
+
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 16px; background: #14110f; border-top: 1px solid #231d19;
+      border-bottom: 1px solid #231d19; position: sticky; top: 0; z-index: 20;
+    }
+    .brand { font-weight: 900; letter-spacing: 0.5px; font-size: 15px; color: #ff8c1a; cursor: pointer; }
+    .langs { display: flex; gap: 4px; font-size: 11px; font-weight: 700; }
+    .langs span { padding: 4px 8px; border-radius: 999px; color: #a8a098; cursor: pointer; }
+    .langs span.active { background: #ff7a00; color: #000; }
+    .btn-login {
+      background: #229ed9; color: #fff; font-weight: 700; text-decoration: none;
+      padding: 6px 12px; border-radius: 999px; font-size: 12px;
+    }
+
+    /* Бөлім сүзгілері */
+    .cat-header { padding: 12px 16px 8px; font-size: 12px; color: #8c847c; }
+    .filters {
+      display: flex; gap: 8px; padding: 0 16px 14px; overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filters::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      background: #171412; border: 1px solid #29231e; color: #cfc7bf;
+      padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700;
+      white-space: nowrap; cursor: pointer;
+    }
+    .filter-btn.active {
+      background: #ff7a00; border-color: #ff7a00; color: #000;
+    }
+
+    /* Каталог торкөзі */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+    .card {
+      background: #14110f; border: 1px solid #25201b; border-radius: 14px;
+      padding: 10px; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .thumb {
+      position: relative; height: 125px; border-radius: 10px; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 8px; margin-bottom: 10px; cursor: pointer;
+    }
+    .thumb-phantom {
+      background:
+        radial-gradient(circle at 75% 25%, rgba(255, 25, 25, 0.45), transparent 55%),
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.14), transparent 55%),
+        linear-gradient(145deg, #09090b 0%, #2a0707 60%, #09090b 100%);
+      border: 1px solid rgba(255, 50, 50, 0.35);
+    }
+    .thumb-drip {
+      background:
+        radial-gradient(circle at 75% 25%, rgba(168, 85, 247, 0.5), transparent 55%),
+        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.25), transparent 55%),
+        linear-gradient(145deg, #0c0618 0%, #2e1065 65%, #09090b 100%);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .badge {
+      position: absolute; top: 7px; right: 7px;
+      background: rgba(12, 10, 9, 0.85); color: #fff;
+      font-size: 9px; font-weight: 800; padding: 3px 7px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .badge.left { left: 7px; right: auto; }
+    .poster-title {
+      font-weight: 900; font-size: 15px; line-height: 1.05;
+      letter-spacing: 0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.85);
+    }
+    .poster-sub {
+      margin-top: 4px; font-size: 10px; font-weight: 800;
+      color: #ff4d4d; letter-spacing: 1px;
+    }
+    .poster-sub.purple { color: #d8b4fe; }
+    .poster-mini {
+      margin-top: 6px; font-size: 8px; color: #e9d5ff; opacity: 0.9;
+      line-height: 1.25;
+    }
+
+    .title { font-size: 13px; font-weight: 700; line-height: 1.25; margin-bottom: 8px; }
+    .meta-row {
+      display: flex; align-items: center; gap: 6px; font-size: 10px;
+      color: #9e968e; margin-bottom: 10px;
+    }
+    .online { color: #34d399; font-weight: 800; }
+
+    .price-box { text-align: center; margin-bottom: 10px; }
+    .ot { font-size: 9px; color: #8c847c; letter-spacing: 0.5px; display: block; }
+    .price { font-size: 14px; font-weight: 900; color: #fff; }
+
+    .btn-buy {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; background: #ff7a00; color: #000; font-weight: 800;
+      padding: 9px; border-radius: 9px; font-size: 13px; border: none; cursor: pointer;
+    }
+
+    /* Тауар ішкі беті */
+    #product-view { display: none; padding: 14px 16px 20px; }
+    .back-btn {
+      background: #1a1613; border: 1px solid #2d2620; color: #fff;
+      padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700;
+      margin-bottom: 14px; cursor: pointer; display: inline-block;
+    }
+    .review-card {
+      background: #14110f; border: 1px solid #241e1a; border-radius: 16px;
+      padding: 14px; margin-bottom: 12px;
+    }
+    .review-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%; background: #26201c;
+      display: flex; align-items: center; justify-content: center; font-weight: 800;
+      font-size: 13px; color: #ff8c1a;
+    }
+    .stars { color: #ff8c1a; font-size: 12px; letter-spacing: 1px; }
+    .review-text { font-size: 13px; color: #e5dfd9; margin-bottom: 12px; }
+    .product-banner {
+      background: #09090b; border: 1px solid #222; border-radius: 12px;
+      padding: 22px 14px; text-align: center;
+    }
+    .product-banner.drip-banner {
+      background: radial-gradient(circle at top, rgba(168,85,247,0.3), #09090b 75%);
+      border-color: rgba(168,85,247,0.35);
+    }
+    .ghost-icon { font-size: 38px; margin-bottom: 8px; }
+    .product-banner h2 { font-size: 22px; letter-spacing: 2px; font-weight: 900; margin-bottom: 6px; }
+    .product-banner p { font-size: 10px; letter-spacing: 1px; color: #b8b0a8; }
+
+    .sticky-buy-bar { margin-top: 14px; }
+    .btn-buy-big {
+      width: 100%; background: #ff7a00; color: #000; font-weight: 900;
+      font-size: 15px; padding: 14px; border-radius: 14px; border: none; cursor: pointer;
+    }
+
+    /* Тариф таңдау модаль терезесі */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
+      z-index: 50; align-items: flex-end; justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-sheet {
+      width: 100%; max-width: 500px; background: #120f0d;
+      border-top: 1px solid #2c241e; border-radius: 22px 22px 0 0;
+      padding: 18px 16px 28px;
+    }
+    .sheet-top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+    }
+    .sheet-top h3 { font-size: 17px; font-weight: 800; }
+    .close-btn {
+      background: none; border: none; color: #b8b0a8; font-size: 20px; cursor: pointer;
+    }
+    .sheet-sub-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px; gap: 8px;
+    }
+    .sheet-sub-row h4 { font-size: 20px; font-weight: 900; line-height: 1.1; }
+    .curr-pills {
+      display: flex; background: #1b1714; padding: 3px; border-radius: 10px;
+      border: 1px solid #2b241e; font-size: 11px; font-weight: 700;
+    }
+    .curr-pills span { padding: 5px 9px; border-radius: 8px; color: #a8a098; }
+    .curr-pills span.active { background: #ff7a00; color: #000; }
+
+    .tariff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .tariff-card {
+      background: #181412; border: 1px solid #29221c; border-radius: 14px;
+      padding: 14px; text-decoration: none; color: #fff; display: block;
+      transition: border-color 0.15s ease;
+    }
+    .tariff-card:hover { border-color: #ff7a00; }
+    .t-time { font-size: 12px; color: #cfc7bf; margin-bottom: 6px; font-weight: 700; }
+    .t-price { font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 6px; }
+    .t-stock { font-size: 11px; color: #34d399; font-weight: 700; }
+
+    /* Төменгі мәзір */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; background: #14110f;
+      border-top: 1px solid #241e1a; display: flex; justify-content: space-around;
+      padding: 8px 4px; font-size: 10px; z-index: 20;
+    }
+    .bottom-nav a {
+      color: #8c847c; text-decoration: none; display: flex;
+      flex-direction: column; align-items: center; gap: 3px;
+    }
+    .bottom-nav a svg { width: 18px; height: 18px; fill: currentColor; }
+    .bottom-nav a.active { color: #ff8c1a; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <!-- Жоғарғы панель -->
+  <div class="topbar">
+    <div class="brand" onclick="showCatalog()">SHAPA MODZ</div>
+    <div class="langs">
+      <span class="active">RU</span>
+      <span>KZ</span>
+      <span>EN</span>
+    </div>
+    <a class="btn-login" href="https://t.me/tatuka11" target="_blank">Войти</a>
+  </div>
+
+  <!-- КАТАЛОГ КӨРІНІСІ -->
+  <div id="catalog-view">
+    <div class="search-wrap">
+      <input class="search-box" type="text" placeholder="Поиск товаров..." />
+    </div>
+
+    <div class="cat-header">Выбери раздел каталога одним нажатием</div>
+    <div class="filters">
+      <button class="filter-btn active">Все ✓</button>
+      <button class="filter-btn">Android Root</button>
+      <button class="filter-btn">Android Non Root</button>
+    </div>
+
+    <div class="grid">
+      <!-- 1. Phantom (Android+ios) — 200 ₸ -->
+      <div class="card">
+        <div>
+          <div class="thumb thumb-phantom" onclick="openProduct('phantom')">
+            <span class="badge left">• BEST HACK</span>
+            <div class="poster-title">PHANTOM<br>MODE</div>
+            <div class="poster-sub">VPN PANEL</div>
+          </div>
+          <div class="title" onclick="openProduct('phantom')" style="cursor:pointer;">Phantom (Android+ios)</div>
+          <div class="meta-row">
+            <span class="online">● ONLINE</span>
+            <span>• Andr+iOS</span>
+          </div>
+        </div>
+        <div>
+          <div class="price-box">
+            <span class="ot">ОТ</span>
+            <div class="price">200 ₸</div>
+          </div>
+          <button class="btn-buy" onclick="openTariffModal('phantom')">🛒 Купить</button>
+        </div>
+      </div>
+
+      <!-- 2. Drip Wire (android+ IOS) — 250 ₸ -->
+      <div class="card">
+        <div>
+          <div class="thumb thumb-drip" onclick="openProduct('drip')">
+            <span class="badge">• 4.4</span>
+            <div class="poster-title">DRIP<br>WIRE</div>
+            <div class="poster-sub purple">ANDROID / iOS</div>
+            <div class="poster-mini">Aimbot • Freeze<br>ESP Moco • Speed</div>
+          </div>
+          <div class="title" onclick="openProduct('drip')" style="cursor:pointer;">Drip Wire (android+ IOS)</div>
+          <div class="meta-row">
+            <span class="online">● ONLINE</span>
+            <span>• Andr+iOS</span>
+          </div>
+        </div>
+        <div>
+          <div class="price-box">
+            <span class="ot">ОТ</span>
+            <div class="price">250 ₸</div>
+          </div>
+          <button class="btn-buy" onclick="openTariffModal('drip')">🛒 Купить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ТАУАР ІШКІ БЕТІ -->
+  <div id="product-view">
+    <button class="back-btn" onclick="showCatalog()">← Назад в каталог</button>
+
+    <div class="review-card">
+      <div class="review-head">
+        <div class="avatar">S</div>
+        <div>
+          <div style="font-weight:700; font-size:13px;">Sai</div>
+          <div class="stars">★★★★★</div>
+        </div>
+      </div>
+      <div class="review-text" id="detail-review-1">Как пофиксить</div>
+      <div id="detail-banner" class="product-banner">
+        <div class="ghost-icon">👾</div>
+        <h2 id="detail-title">PHANTOM</h2>
+        <p id="detail-sub">NO ACCOUNT. NO PASSWORD. JUST YOUR KEY.</p>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-head">
+        <div class="avatar">N</div>
+        <div>
+          <div style="font-weight:700; font-size:13px;">N</div>
+          <div class="stars">★★★★★</div>
+        </div>
+      </div>
+      <div class="review-text">Топ</div>
+    </div>
+
+    <div class="sticky-buy-bar">
+      <button id="detail-buy-btn" class="btn-buy-big" onclick="openTariffModal('phantom')">🛒 Купить — от 200 ₸</button>
+    </div>
+  </div>
+
+  <!-- ТАРИФ ТАҢДАУ МОДАЛЬ ТЕРЕЗЕСІ -->
+  <div id="tariff-modal" class="modal-backdrop" onclick="closeOnBackdrop(event)">
+    <div class="modal-sheet">
+      <div class="sheet-top">
+        <h3 id="modal-product-label">Выбери тариф</h3>
+        <button class="close-btn" onclick="closeTariffModal()">✕</button>
+      </div>
+
+      <div class="sheet-sub-row">
+        <h4>Выберите<br>тариф</h4>
+        <div class="curr-pills">
+          <span>USD</span>
+          <span>RUB</span>
+          <span class="active">KZT</span>
+        </div>
+      </div>
+
+      <div id="tariff-list" class="tariff-grid"></div>
+    </div>
+  </div>
+
+  <!-- Төменгі мәзір -->
+  <div class="bottom-nav">
+    <a href="#" onclick="showCatalog(); return false;">
+      <svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3l9-8z"/></svg>
+      <span>Главная</span>
+    </a>
+    <a href="#" class="active" onclick="showCatalog(); return false;">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16v2H4V4zm1 4h14l-1 12H6L5 8zm4 3v6h2v-6H9zm4 0v6h2v-6h-2z"/></svg>
+      <span>Магазин</span>
+    </a>
+    <a href="#" onclick="showCatalog(); return false;">
+      <svg viewBox="0 0 24 24"><path d="M3 13h4l2-6 4 12 2-6h6v2h-4.6l-2.4 7-4-12-1.4 4H3v-2z"/></svg>
+      <span>Статус модов</span>
+    </a>
+    <a href="https://t.me/tatuka11" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12 2a9 9 0 0 0-9 9v7a2 2 0 0 0 2 2h3v-8H5v-1a7 7 0 0 1 14 0v1h-3v8h3a2 2 0 0 0 2-2v-7a9 9 0 0 0-9-9z"/></svg>
+      <span>Связь с админом</span>
+    </a>
+    <a href="https://t.me/tatuka11" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-5.33 0-8 2.67-8 6v1h16v-1c0-3.33-2.67-6-8-6z"/></svg>
+      <span>Кабинет</span>
+    </a>
+  </div>
+
+  <script>
+    const productsData = {
+      phantom: {
+        name: 'Phantom (Android+ios)',
+        bannerTitle: 'PHANTOM',
+        bannerSub: 'NO ACCOUNT. NO PASSWORD. JUST YOUR KEY.',
+        icon: '👾',
+        minPrice: '200 ₸',
+        bannerClass: 'product-banner',
+        tariffs: [
+          { time: '1 час', price: '200 ₸' },
+          { time: '3 часа', price: '300 ₸' },
+          { time: '6 часов', price: '450 ₸' },
+          { time: '1 день', price: '850 ₸' }
+        ]
+      },
+      drip: {
+        name: 'Drip Wire (android+ IOS)',
+        bannerTitle: 'DRIP WIRE 4.4',
+        bannerSub: 'AIMBOT • FREEZE • ESP MOCO • SPEED',
+        icon: '⚡',
+        minPrice: '250 ₸',
+        bannerClass: 'product-banner drip-banner',
+        tariffs: [
+          { time: '3 часа', price: '250 ₸' },
+          { time: '6 часов', price: '400 ₸' },
+          { time: '1 день', price: '850 ₸' },
+          { time: '7 дней', price: '2600 ₸' }
+        ]
+      }
+    };
+
+    let currentProductKey = 'phantom';
+
+    function openProduct(key) {
+      currentProductKey = key;
+      const p = productsData[key];
+      document.getElementById('catalog-view').style.display = 'none';
+      document.getElementById('product-view').style.display = 'block';
+
+      const banner = document.getElementById('detail-banner');
+      banner.className = p.bannerClass;
+      banner.querySelector('.ghost-icon').textContent = p.icon;
+      document.getElementById('detail-title').textContent = p.bannerTitle;
+      document.getElementById('detail-sub').textContent = p.bannerSub;
+
+      const buyBtn = document.getElementById('detail-buy-btn');
+      buyBtn.textContent = `🛒 Купить — от ${p.minPrice}`;
+      buyBtn.onclick = () => openTariffModal(key);
+
+      window.scrollTo(0, 0);
+    }
+
+    function showCatalog() {
+      document.getElementById('product-view').style.display = 'none';
+      document.getElementById('catalog-view').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+
+    function openTariffModal(key) {
+      currentProductKey = key;
+      const p = productsData[key];
+      document.getElementById('modal-product-label').textContent = `Выбери тариф • ${p.name}`;
+
+      const list = document.getElementById('tariff-list');
+      list.innerHTML = '';
+
+      p.tariffs.forEach(t => {
+        const msg = encodeURIComponent(`Привет! Хочу купить ${p.name} — тариф: ${t.time} (${t.price})`);
+        const a = document.createElement('a');
+        a.className = 'tariff-card';
+        a.href = `https://t.me/tatuka11?text=${msg}`;
+        a.target = '_blank';
+        a.innerHTML = `
+          <div class="t-time">${t.time}</div>
+          <div class="t-price">${t.price}</div>
+          <div class="t-stock">● В наличии</div>
+        `;
+        list.appendChild(a);
+      });
+
+      document.getElementById('tariff-modal').classList.add('open');
+    }
+
+    function closeTariffModal() {
+      document.getElementById('tariff-modal').classList.remove('open');
+    }
+
+    function closeOnBackdrop(e) {
+      if (e.target.id === 'tariff-modal') closeTariffModal();
+    }
+  </script>
+
+</body>
+</html>
