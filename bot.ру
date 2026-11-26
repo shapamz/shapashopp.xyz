@@ -1,0 +1,234 @@
+import os
+import threading
+from flask import Flask
+import telebot
+from telebot import types
+from telebot.types import LabeledPrice
+
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "").strip()
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "tatuka11").lstrip("@").strip()
+SITE_URL = os.environ.get("SITE_URL", "https://shapamz.github.io/shapashopp.xyz/").strip()
+
+if not BOT_TOKEN:
+    raise RuntimeError("BOT_TOKEN табылмады! Render Environment Variables ішіне BOT_TOKEN қос.")
+
+bot = telebot.TeleBot(BOT_TOKEN)
+app = Flask(__name__)
+
+PRODUCTS = {
+    "drip": {
+        "name": "Drip Wire (Android + iOS)",
+        "duration_label_prefix": "",
+        "tariffs": [
+            ("3 часа", 36),
+            ("6 часов", 59),
+            ("1 день", 121),
+            ("7 дней", 400),
+        ],
+    },
+    "phantom": {
+        "name": "Phantom (Android + iOS)",
+        "duration_label_prefix": "",
+        "tariffs": [
+            ("1 час", 24),
+            ("3 часа", 44),
+            ("6 часов", 67),
+            ("1 день", 121),
+            ("7 дней", 470),
+        ],
+    },
+}
+
+
+@app.route("/")
+def health():
+    return "SHAPA MODZ bot is running", 200
+
+
+def run_web():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+
+def reply_menu_keyboard():
+    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.add(types.KeyboardButton("🏠 Главное меню"))
+    return kb
+
+
+def welcome_text():
+    return (
+        "🚀 *ДОБРО ПОЖАЛОВАТЬ В SHAPA MODZ SHOP*\n\n"
+        "⚡ Мгновенная выдача после оплаты\n"
+        "🛡 Софты Free Fire (Android + iOS)\n"
+        "💬 Поддержка 24/7\n\n"
+        "Выберите действие ниже:"
+    )
+
+
+def main_menu_keyboard():
+    kb = types.InlineKeyboardMarkup(row_width=1)
+    kb.add(types.InlineKeyboardButton("🌐 Открыть сайт магазина", url=SITE_URL))
+    kb.add(types.InlineKeyboardButton("🛒 Выбрать товар", callback_data="open_shop"))
+    kb.add(types.InlineKeyboardButton("💬 Поддержка", url=f"https://t.me/{ADMIN_USERNAME}"))
+    return kb
+
+
+def shop_keyboard():
+    kb = types.InlineKeyboardMarkup(row_width=1)
+    kb.add(types.InlineKeyboardButton("Drip Wire (Android + iOS)", callback_data="prod_drip"))
+    kb.add(types.InlineKeyboardButton("Phantom (Android + iOS)", callback_data="prod_phantom"))
+    kb.add(types.InlineKeyboardButton("⬅️ Назад в меню", callback_data="back_home"))
+    return kb
+
+
+def tariffs_keyboard(prod_key):
+    kb = types.InlineKeyboardMarkup(row_width=1)
+    for idx, (period, stars) in enumerate(PRODUCTS[prod_key]["tariffs"]):
+        kb.add(
+            types.InlineKeyboardButton(
+                f"{period} — {stars} ⭐",
+                callback_data=f"buy_{prod_key}_{idx}",
+            )
+        )
+    kb.add(types.InlineKeyboardButton("⬅️ Назад к товарам", callback_data="open_shop"))
+    return kb
+
+
+def send_main_menu(chat_id, message_id=None, edit=False):
+    if edit and message_id:
+        bot.edit_message_text(
+            welcome_text(),
+            chat_id,
+            message_id,
+            parse_mode="Markdown",
+            reply_markup=main_menu_keyboard(),
+        )
+    else:
+        bot.send_message(
+            chat_id,
+            "🏠 *Главное меню*",
+            parse_mode="Markdown",
+            reply_markup=reply_menu_keyboard(),
+        )
+        bot.send_message(
+            chat_id,
+            welcome_text(),
+            parse_mode="Markdown",
+            reply_markup=main_menu_keyboard(),
+        )
+
+
+def send_shop_list(chat_id, message_id=None, edit=False):
+    text = "Выберите товар для просмотра тарифов:"
+    if edit and message_id:
+        bot.edit_message_text(
+            text,
+            chat_id,
+            message_id,
+            reply_markup=shop_keyboard(),
+        )
+    else:
+        bot.send_message(
+            chat_id,
+            text,
+            reply_markup=shop_keyboard(),
+        )
+
+
+@bot.message_handler(commands=["start"])
+def cmd_start(message):
+    send_main_menu(message.chat.id, edit=False)
+
+
+@bot.message_handler(func=lambda m: m.text == "🏠 Главное меню")
+def handle_home_button(message):
+    send_main_menu(message.chat.id, edit=False)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def handle_callback(call):
+    data = call.data
+    chat_id = call.message.chat.id
+    msg_id = call.message.message_id
+
+    if data == "back_home":
+        send_main_menu(chat_id, message_id=msg_id, edit=True)
+
+    elif data == "open_shop":
+        send_shop_list(chat_id, message_id=msg_id, edit=True)
+
+    elif data.startswith("prod_"):
+        prod_key = data.replace("prod_", "", 1)
+        prod = PRODUCTS.get(prod_key)
+        if not prod:
+            bot.answer_callback_query(call.id)
+            return
+        text = f"📦 *{prod['name']}*\n\nВыберите срок и цену:"
+        bot.edit_message_text(
+            text,
+            chat_id,
+            msg_id,
+            parse_mode="Markdown",
+            reply_markup=tariffs_keyboard(prod_key),
+        )
+
+    elif data.startswith("buy_"):
+        parts = data.split("_")
+        prod_key = parts[1]
+        idx = int(parts[2])
+        prod = PRODUCTS[prod_key]
+        period, stars = prod["tariffs"][idx]
+
+        invoice_info = (
+            f"⭐ Оплата: {prod['name']} - {period}\n"
+            f"Товар: {prod['name']} Срок: {period}\n"
+            f"Сумма: {stars} ⭐"
+        )
+        bot.send_message(chat_id, invoice_info, reply_markup=reply_menu_keyboard())
+
+        prices = [LabeledPrice(label=f"{prod['name']} ({period})", amount=stars)]
+        bot.send_invoice(
+            chat_id=chat_id,
+            title=f"{prod['name']} — {period}",
+            description=f"Товар: {prod['name']} | Срок: {period}",
+            invoice_payload=f"order:{prod_key}:{idx}",
+            provider_token="",
+            currency="XTR",
+            prices=prices,
+        )
+
+    bot.answer_callback_query(call.id)
+
+
+@bot.pre_checkout_query_handler(func=lambda query: True)
+def checkout_handler(pre_checkout_query):
+    bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+
+
+@bot.message_handler(content_types=["successful_payment"])
+def got_payment(message):
+    sp = message.successful_payment
+    bot.send_message(
+        message.chat.id,
+        f"✅ Оплата *{sp.total_amount} ⭐* прошла успешно!\n\n"
+        f"Для получения ключа напишите @{ADMIN_USERNAME}.",
+        parse_mode="Markdown",
+        reply_markup=reply_menu_keyboard(),
+    )
+
+
+@bot.message_handler(content_types=["photo", "text", "document"])
+def handle_user_message(message):
+    if message.text and message.text.startswith("/"):
+        return
+    bot.send_message(
+        message.chat.id,
+        f"✅ Хабарламаң қабылданды! @{ADMIN_USERNAME} жауап береді.",
+        reply_markup=reply_menu_keyboard(),
+    )
+
+
+if __name__ == "__main__":
+    threading.Thread(target=run_web, daemon=True).start()
+    bot.infinity_polling(skip_pending=True)
